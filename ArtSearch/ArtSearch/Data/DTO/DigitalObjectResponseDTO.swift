@@ -1,7 +1,18 @@
+//
+//  DigitalObjectResponseDTO.swift
+//  ArtSearch
+//
+//  Created by Luka Alimbarashvili on 19.03.26.
+//
+
 import Foundation
 
 struct DigitalObjectResponseDTO: Decodable {
-    let access_point: [DigitalAccessPointDTO]?
+    let accessPoint: [DigitalAccessPointDTO]?
+    
+    enum CodingKeys: String, CodingKey {
+        case accessPoint = "access_point"
+    }
 }
 
 struct DigitalAccessPointDTO: Decodable {
@@ -9,10 +20,8 @@ struct DigitalAccessPointDTO: Decodable {
 }
 
 extension DigitalObjectResponseDTO {
-    var imageURL: URL? {
-        access_point?
-            .compactMap(\.id)
-            .compactMap(URL.init(string:))
-            .first
+    func toDomain() -> DigitalObject {
+        let imageURL = accessPoint?.compactMap { URL(string: $0.id) }.first
+        return DigitalObject(imageURL: imageURL)
     }
 }

@@ -8,16 +8,11 @@
 import Foundation
 
 struct MuseumCollectionPageResponseDTO: Decodable {
-    let next: PageLinkDTO?
-    let orderedItems: [ArtworkDTO]
+    let next: ResourceReferenceDTO?
+    let orderedItems: [ResourceReferenceDTO]
 }
 
-struct ArtworkDTO: Decodable {
-    let id: String
-    let type: String
-}
-
-struct PageLinkDTO: Decodable {
+struct ResourceReferenceDTO: Decodable {
     let id: String
     let type: String
 }
@@ -31,7 +26,7 @@ extension MuseumCollectionPageResponseDTO {
     }
 }
 
-extension ArtworkDTO {
+extension ResourceReferenceDTO {
     func toDomain() -> ArtworkReference? {
         guard let id = URL(string: id) else {
             return nil

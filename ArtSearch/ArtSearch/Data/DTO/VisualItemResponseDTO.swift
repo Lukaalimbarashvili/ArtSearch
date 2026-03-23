@@ -1,7 +1,18 @@
+//
+//  VisualItemResponseDTO.swift
+//  ArtSearch
+//
+//  Created by Luka Alimbarashvili on 19.03.26.
+//
+
 import Foundation
 
 struct VisualItemResponseDTO: Decodable {
-    let digitally_shown_by: [DigitalObjectReferenceDTO]?
+    let digitallyShownBy: [DigitalObjectReferenceDTO]?
+    
+    enum CodingKeys: String, CodingKey {
+        case digitallyShownBy = "digitally_shown_by"
+    }
 }
 
 struct DigitalObjectReferenceDTO: Decodable {
@@ -9,10 +20,8 @@ struct DigitalObjectReferenceDTO: Decodable {
 }
 
 extension VisualItemResponseDTO {
-    var digitalObjectURL: URL? {
-        digitally_shown_by?
-            .compactMap(\.id)
-            .compactMap(URL.init(string:))
-            .first
+    func toDomain() -> VisualItem {
+        let digitalObjectURL = digitallyShownBy?.compactMap { URL(string: $0.id) }.first
+        return VisualItem(digitalObjectURL: digitalObjectURL)
     }
 }

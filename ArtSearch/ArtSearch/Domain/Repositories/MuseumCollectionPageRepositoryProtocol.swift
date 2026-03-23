@@ -1,5 +1,5 @@
 //
-//  CollectionPageRepositoryProtocol.swift
+//  MuseumCollectionPageRepositoryProtocol.swift
 //  ArtSearch
 //
 //  Created by Luka Alimbarashvili on 19.03.26.

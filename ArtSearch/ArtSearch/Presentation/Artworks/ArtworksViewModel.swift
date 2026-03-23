@@ -9,28 +9,82 @@ import Foundation
 
 @MainActor
 final class ArtworksViewModel {
-    
-    private let museumCollectionPageUseCase: MuseumCollectionPageUseCaseProtocol
 
-    private(set) var artworks: [ArtworkReference] = []
-    private(set) var nextPageURL: URL?
-
-    init(museumCollectionPageUseCase: MuseumCollectionPageUseCaseProtocol) {
-        self.museumCollectionPageUseCase = museumCollectionPageUseCase
+    enum ViewState {
+        case reloadAll
+        case updateVisibleItem(Int)
+        case showError(String)
     }
 
-    func loadArtworks() async throws {
-        var allArtworks: [ArtworkReference] = []
-        var nextPageURL: URL?
+    private let loadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol
 
-//        repeat {
-            let page = try await museumCollectionPageUseCase.execute(nextPageURL: nextPageURL)
-            allArtworks.append(contentsOf: page.artworks)
-            nextPageURL = page.nextPageURL
-            print(nextPageURL)
-//        } while nextPageURL != nil
+    var onStateChange: ((ViewState) -> Void)?
 
-        artworks = allArtworks
-        self.nextPageURL = nextPageURL
+    private var artworks: [ArtworkItemViewData] = []
+    private(set) var nextPageURL: URL?
+    private var loadTask: Task<Void, Never>?
+
+    var artworksCount: Int {
+        artworks.count
+    }
+    
+    init(loadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol) {
+        self.loadArtworkPreviewsUseCase = loadArtworkPreviewsUseCase
+    }
+    
+    deinit {
+        loadTask?.cancel()
+    }
+
+    func loadArtworks() {
+        loadTask?.cancel()
+        artworks = []
+        onStateChange?(.reloadAll)
+        loadTask = Task {
+            do {
+                for try await update in loadArtworkPreviewsUseCase.execute(nextPageURL: nil) {
+                    handle(update)
+                }
+            } catch {
+                onStateChange?(.showError(error.localizedDescription))
+            }
+        }
+    }
+
+    private func handle(_ update: ArtworkPreviewUpdate) {
+        switch update {
+        case let .pagination(nextPageURL):
+            self.nextPageURL = nextPageURL
+
+        case let .setPlaceholders(items):
+            artworks = items
+            onStateChange?(.reloadAll)
+
+        case let .updateTitle(id, title):
+            guard let index = artworks.firstIndex(where: { $0.id == id }) else { return }
+            artworks[index].title = title
+            artworks[index].titleFailed = false
+            onStateChange?(.updateVisibleItem(index))
+
+        case let .failTitle(id):
+            guard let index = artworks.firstIndex(where: { $0.id == id }) else { return }
+            artworks[index].titleFailed = true
+            onStateChange?(.updateVisibleItem(index))
+
+        case let .updateImage(id, imageURL):
+            guard let index = artworks.firstIndex(where: { $0.id == id }) else { return }
+            artworks[index].imageURL = imageURL
+            artworks[index].imageFailed = false
+            onStateChange?(.updateVisibleItem(index))
+
+        case let .failImage(id):
+            guard let index = artworks.firstIndex(where: { $0.id == id }) else { return }
+            artworks[index].imageFailed = true
+        }
+    }
+
+    func artwork(at index: Int) -> ArtworkItemViewData? {
+        guard index < artworks.count else { return nil }
+        return artworks[index]
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import NukeExtensions
 
 final class ArtworkCell: UICollectionViewCell {
     static let reuseIdentifier = "ArtworkCell"
@@ -36,9 +37,29 @@ final class ArtworkCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func configure(title: String) {
+    
+    func configure(title: String?, imageURL: URL?) {
         titleLabel.text = title
+        imageView.image = UIImage(systemName: "photo")
+        imageView.tintColor = .secondaryLabel
+        NukeExtensions.cancelRequest(for: imageView)
+
+        guard let imageURL else { return }
+
+        NukeExtensions.loadImage(with: imageURL, into: imageView)
+        imageView.tintColor = nil
+    }
+
+    func configurePlaceholder() {
+        configure(title: "Loading...", imageURL: nil)
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        NukeExtensions.cancelRequest(for: imageView)
+        imageView.image = UIImage(systemName: "photo")
+        imageView.tintColor = .secondaryLabel
+        titleLabel.text = nil
     }
 
     private func configureUI() {
@@ -54,12 +75,12 @@ final class ArtworkCell: UICollectionViewCell {
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            imageView.heightAnchor.constraint(equalToConstant: 150),
+            imageView.heightAnchor.constraint(equalToConstant: 180),
 
-            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor),
+            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 6),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6)
         ])
     }
 }

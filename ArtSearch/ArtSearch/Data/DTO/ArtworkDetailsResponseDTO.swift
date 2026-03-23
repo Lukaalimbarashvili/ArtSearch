@@ -1,8 +1,20 @@
+//
+//  ArtworkDetailsResponseDTO.swift
+//  ArtSearch
+//
+//  Created by Luka Alimbarashvili on 19.03.26.
+//
+
 import Foundation
 
 struct ArtworkDetailsResponseDTO: Decodable {
-    let identified_by: [IdentifiedByDTO]?
+    let identifiedBy: [IdentifiedByDTO]?
     let shows: [ShowDTO]?
+    
+    enum CodingKeys: String, CodingKey {
+        case identifiedBy = "identified_by"
+        case shows
+    }
 }
 
 struct IdentifiedByDTO: Decodable {
@@ -15,16 +27,16 @@ struct ShowDTO: Decodable {
 }
 
 extension ArtworkDetailsResponseDTO {
-    var title: String? {
-        identified_by?
+    func toDomain() -> ArtworkDetails {
+        let title = identifiedBy?
             .first(where: { $0.type == "Name" })?
             .content
-    }
 
-    var visualItemURL: URL? {
-        shows?
-            .compactMap(\.id)
-            .compactMap(URL.init(string:))
-            .first
+        let visualItemURL = shows?.compactMap { URL(string: $0.id) }.first
+
+        return ArtworkDetails(
+            title: title,
+            visualItemURL: visualItemURL
+        )
     }
 }
