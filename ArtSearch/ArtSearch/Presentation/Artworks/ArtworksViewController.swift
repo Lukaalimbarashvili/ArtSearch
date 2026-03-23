@@ -98,8 +98,8 @@ final class ArtworksViewController: UIViewController {
                 }
             case let .updateVisibleItem(index):
                 self.updateVisibleItem(index)
-            case let .showError(message):
-                self.showErrorState(message: message)
+            case .showError:
+                self.showErrorState()
             }
         }
         
@@ -126,8 +126,7 @@ final class ArtworksViewController: UIViewController {
         return artwork.titleFailed ? "Title unavailable" : "Loading..."
     }
 
-    private func showErrorState(message: String) {
-        errorStateView.configure(message: message)
+    private func showErrorState() {
         errorStateView.isHidden = false
         collectionView.isHidden = true
     }

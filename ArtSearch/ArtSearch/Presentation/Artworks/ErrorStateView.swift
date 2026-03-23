@@ -26,6 +26,7 @@ final class ErrorStateView: UIView {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.font = .preferredFont(forTextStyle: .headline)
+        label.text = "Oops! Something went wrong.\nPlease try again."
         return label
     }()
 
@@ -66,10 +67,6 @@ final class ErrorStateView: UIView {
         ])
 
         retryButton.addTarget(self, action: #selector(didTapRetry), for: .touchUpInside)
-    }
-    
-    func configure(message: String) {
-        messageLabel.text = message
     }
 
     @objc

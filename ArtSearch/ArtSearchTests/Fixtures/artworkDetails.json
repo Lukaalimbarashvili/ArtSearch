@@ -1,0 +1,73 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://id.rijksmuseum.nl/2001",
+  "type": "HumanMadeObject",
+  "produced_by": {
+    "type": "Production",
+    "technique": [
+      {
+        "notation": [
+          { "@language": "nl", "@value": "etsen" },
+          { "@language": "en", "@value": "etching" }
+        ]
+      },
+      {
+        "notation": [
+          { "@language": "nl", "@value": "aquatint" },
+          { "@language": "en", "@value": "aquatint" }
+        ]
+      },
+      {
+        "notation": [
+          { "@language": "nl", "@value": "droge naald" },
+          { "@language": "en", "@value": "drypoint" }
+        ]
+      }
+    ],
+    "timespan": {
+      "begin_of_the_begin": "1973-01-01T00:00:00Z"
+    }
+  },
+  "subject_of": [
+    {
+      "type": "LinguisticObject",
+      "digitally_carried_by": [
+        {
+          "type": "DigitalObject",
+          "access_point": [
+            {
+              "id": "https://www.rijksmuseum.nl/nl/collectie/object/RP-P-2010-222-3315--ba97e0d4396e589a312631ff4fbfd5fb",
+              "type": "DigitalObject"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Before, Behind, Between, Above, Below"
+    }
+  ],
+  "made_of": [
+    {
+      "notation": [
+        { "@language": "en", "@value": "paper" },
+        { "@language": "nl", "@value": "papier" }
+      ]
+    }
+  ],
+  "shows": [
+    {
+      "id": "https://id.rijksmuseum.nl/2021",
+      "type": "VisualItem"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Links naast de vrouw staat een paal waaraan een opgespannen doek met blote billen erop hangt. De vrouw leunt op een blok met de titel."
+    }
+  ]
+}

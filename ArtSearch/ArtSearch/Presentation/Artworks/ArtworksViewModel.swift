@@ -17,7 +17,7 @@ final class ArtworksViewModel {
         case reloadAll
         case insertItems([Int])
         case updateVisibleItem(Int)
-        case showError(String)
+        case showError
     }
 
     private let loadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol
@@ -77,7 +77,7 @@ final class ArtworksViewModel {
                 return
             } catch {
                 if artworks.isEmpty {
-                    onStateChange?(.showError(error.localizedDescription))
+                    onStateChange?(.showError)
                 }
             }
         }

@@ -1,0 +1,11 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://id.rijksmuseum.nl/50012267104517610583105",
+  "type": "DigitalObject",
+  "access_point": [
+    {
+      "id": "https://iiif.micr.io/KMFvF/full/max/0/default.jpg",
+      "type": "DigitalObject"
+    }
+  ]
+}

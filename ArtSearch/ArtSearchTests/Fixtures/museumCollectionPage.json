@@ -1,0 +1,19 @@
+{
+  "@context": "https://linked.art/ns/v1/search.json",
+  "id": "https://data.rijksmuseum.nl/search/collection?type=painting&material=oil%20paint",
+  "type": "OrderedCollectionPage",
+  "next": {
+    "id": "https://data.rijksmuseum.nl/search/collection?pageToken=eyJ0b2tlbiI6ICJodHRwczovL2lkLnJpamtzbXVzZXVtLm5sLzIwMDEwNzg2MCJ9",
+    "type": "OrderedCollectionPage"
+  },
+  "orderedItems": [
+    {
+      "id": "https://id.rijksmuseum.nl/200100988",
+      "type": "HumanMadeObject"
+    },
+    {
+      "id": "https://id.rijksmuseum.nl/200104600",
+      "type": "HumanMadeObject"
+    }
+  ]
+}
