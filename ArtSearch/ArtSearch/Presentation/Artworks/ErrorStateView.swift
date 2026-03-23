@@ -31,13 +31,16 @@ final class ErrorStateView: UIView {
     }()
 
     private let retryButton: UIButton = {
-        let button = UIButton()
+        var configuration = UIButton.Configuration.filled()
+        configuration.title = "Retry"
+        configuration.baseBackgroundColor = .label
+        configuration.baseForegroundColor = .systemBackground
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 24, bottom: 12, trailing: 24)
+
+        let button = UIButton(configuration: configuration)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Retry", for: .normal)
         button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
-        button.backgroundColor = .label
-        button.layer.cornerRadius = 12
-        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
         return button
     }()
 
