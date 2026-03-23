@@ -43,6 +43,7 @@ final class ArtworksViewController: UIViewController {
         view.addSubview(errorStateView)
 
         collectionView.dataSource = self
+        collectionView.delegate = self
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -88,6 +89,11 @@ final class ArtworksViewController: UIViewController {
             case .reloadAll:
                 self.hideErrorState()
                 self.collectionView.reloadData()
+            case let .insertItems(indices):
+                let indexPaths = indices.map { IndexPath(item: $0, section: 0) }
+                self.collectionView.performBatchUpdates {
+                    self.collectionView.insertItems(at: indexPaths)
+                }
             case let .updateVisibleItem(index):
                 self.updateVisibleItem(index)
             case let .showError(message):
@@ -144,5 +150,11 @@ extension ArtworksViewController: UICollectionViewDataSource {
 
         cell.configure(title: displayTitle(for: artwork), imageURL: artwork.imageURL)
         return cell
+    }
+}
+
+extension ArtworksViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        viewModel.loadNextPageIfNeeded(currentIndex: indexPath.item)
     }
 }

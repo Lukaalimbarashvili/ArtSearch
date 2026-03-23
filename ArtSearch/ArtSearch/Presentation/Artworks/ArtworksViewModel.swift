@@ -9,9 +9,13 @@ import Foundation
 
 @MainActor
 final class ArtworksViewModel {
+    private enum Constants {
+        static let nextPageTriggerThreshold = 8
+    }
 
     enum ViewState {
         case reloadAll
+        case insertItems([Int])
         case updateVisibleItem(Int)
         case showError(String)
     }
@@ -23,6 +27,8 @@ final class ArtworksViewModel {
     private var artworks: [ArtworkItemViewData] = []
     private(set) var nextPageURL: URL?
     private var loadTask: Task<Void, Never>?
+    private var isLoadingPage = false
+    private var loadRequestID = UUID()
 
     var artworksCount: Int {
         artworks.count
@@ -39,14 +45,40 @@ final class ArtworksViewModel {
     func loadArtworks() {
         loadTask?.cancel()
         artworks = []
+        nextPageURL = nil
+        isLoadingPage = false
         onStateChange?(.reloadAll)
+        loadPage(nextPageURL: nil)
+    }
+
+    func loadNextPageIfNeeded(currentIndex: Int) {
+        guard currentIndex >= artworks.count - Constants.nextPageTriggerThreshold else { return }
+        guard let nextPageURL, !isLoadingPage else { return }
+
+        loadPage(nextPageURL: nextPageURL)
+    }
+    
+    private func loadPage(nextPageURL: URL?) {
+        guard !isLoadingPage else { return }
+        
+        isLoadingPage = true
+        
         loadTask = Task {
+            defer {
+                isLoadingPage = false
+                loadTask = nil
+            }
+            
             do {
-                for try await update in loadArtworkPreviewsUseCase.execute(nextPageURL: nil) {
+                for try await update in loadArtworkPreviewsUseCase.execute(nextPageURL: nextPageURL) {
                     handle(update)
                 }
+            } catch is CancellationError {
+                return
             } catch {
-                onStateChange?(.showError(error.localizedDescription))
+                if artworks.isEmpty {
+                    onStateChange?(.showError(error.localizedDescription))
+                }
             }
         }
     }
@@ -57,9 +89,16 @@ final class ArtworksViewModel {
             self.nextPageURL = nextPageURL
 
         case let .setPlaceholders(items):
-            artworks = items
-            onStateChange?(.reloadAll)
-
+            if artworks.isEmpty {
+                artworks = items
+                onStateChange?(.reloadAll)
+            } else {
+                let startIndex = artworks.count
+                artworks.append(contentsOf: items)
+                let insertedIndices = Array(startIndex ..< artworks.count)
+                onStateChange?(.insertItems(insertedIndices))
+            }
+            
         case let .updateTitle(id, title):
             guard let index = artworks.firstIndex(where: { $0.id == id }) else { return }
             artworks[index].title = title

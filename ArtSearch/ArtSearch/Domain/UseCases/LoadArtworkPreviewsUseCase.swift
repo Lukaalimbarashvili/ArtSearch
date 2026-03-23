@@ -21,6 +21,11 @@ protocol LoadArtworkPreviewsUseCaseProtocol {
 }
 
 struct LoadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol {
+    
+    private enum Constants {
+        static let maxConcurrentArtworkLoads = 28
+    }
+
     private let collectionRepository: MuseumCollectionPageRepositoryProtocol
     private let artworkDetailsRepository: ArtworkDetailsRepositoryProtocol
     private let visualItemRepository: VisualItemRepositoryProtocol
@@ -56,34 +61,12 @@ struct LoadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol {
                         )
                     }
                     continuation.yield(.setPlaceholders(placeholders))
-                    
-                    try await withThrowingTaskGroup(of: [ArtworkLoadResult].self) { group in
-                        for artwork in page.artworks {
-                            group.addTask {
-                                try await self.loadUpdates(for: artwork)
-                            }
-                        }
-                        
-                        while let results = try await group.next() {
-                            try Task.checkCancellation()
-                            
-                            for result in results {
-                                switch result {
-                                case let .title(id, title):
-                                    continuation.yield(.updateTitle(id: id, title: title))
-                                    
-                                case let .failTitle(id):
-                                    continuation.yield(.failTitle(id: id))
-                                    
-                                case let .image(id, imageURL):
-                                    continuation.yield(.updateImage(id: id, imageURL: imageURL))
-                                    
-                                case let .failImage(id):
-                                    continuation.yield(.failImage(id: id))
-                                }
-                            }
-                        }
-                    }
+
+                    try await loadArtworkPreviews(
+                        for: page.artworks,
+                        continuation: continuation,
+                        maxConcurrent: Constants.maxConcurrentArtworkLoads
+                    )
                     
                     continuation.finish()
                 } catch is CancellationError {
@@ -95,6 +78,50 @@ struct LoadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol {
             
             continuation.onTermination = { @Sendable _ in
                 task.cancel()
+            }
+        }
+    }
+
+    private func loadArtworkPreviews(
+        for artworks: [ArtworkReference],
+        continuation: AsyncThrowingStream<ArtworkPreviewUpdate, Error>.Continuation,
+        maxConcurrent: Int
+    ) async throws {
+        guard !artworks.isEmpty else { return }
+
+        var iterator = artworks.makeIterator()
+
+        try await withThrowingTaskGroup { group in
+            for _ in 0 ..< maxConcurrent {
+                guard let artwork = iterator.next() else { break }
+                group.addTask {
+                    try await self.loadUpdates(for: artwork)
+                }
+            }
+
+            for try await results in group {
+
+                for result in results {
+                    switch result {
+                    case let .title(id, title):
+                        continuation.yield(.updateTitle(id: id, title: title))
+
+                    case let .failTitle(id):
+                        continuation.yield(.failTitle(id: id))
+
+                    case let .image(id, imageURL):
+                        continuation.yield(.updateImage(id: id, imageURL: imageURL))
+
+                    case let .failImage(id):
+                        continuation.yield(.failImage(id: id))
+                    }
+                }
+
+                if let nextArtwork = iterator.next() {
+                    group.addTask {
+                        try await self.loadUpdates(for: nextArtwork)
+                    }
+                }
             }
         }
     }

@@ -10,9 +10,12 @@ import NukeExtensions
 
 final class ArtworkCell: UICollectionViewCell {
     static let reuseIdentifier = "ArtworkCell"
+    
+    private static let placeholderImage = UIImage(systemName: "photo")
+    private static let imageLoadingOptions = ImageLoadingOptions(placeholder: placeholderImage, failureImage: placeholderImage)
 
     private let imageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "photo"))
+        let imageView = UIImageView(image: placeholderImage)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 12
@@ -40,14 +43,12 @@ final class ArtworkCell: UICollectionViewCell {
     
     func configure(title: String?, imageURL: URL?) {
         titleLabel.text = title
-        imageView.image = UIImage(systemName: "photo")
+        imageView.image = Self.placeholderImage
         imageView.tintColor = .secondaryLabel
         NukeExtensions.cancelRequest(for: imageView)
 
         guard let imageURL else { return }
-
-        NukeExtensions.loadImage(with: imageURL, into: imageView)
-        imageView.tintColor = nil
+        NukeExtensions.loadImage(with: imageURL, options: Self.imageLoadingOptions, into: imageView)
     }
 
     func configurePlaceholder() {
@@ -57,7 +58,7 @@ final class ArtworkCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         NukeExtensions.cancelRequest(for: imageView)
-        imageView.image = UIImage(systemName: "photo")
+        imageView.image = Self.placeholderImage
         imageView.tintColor = .secondaryLabel
         titleLabel.text = nil
     }
