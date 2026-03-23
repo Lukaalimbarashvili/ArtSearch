@@ -10,6 +10,7 @@ import UIKit
 final class ArtworksViewController: UIViewController {
     
     private let viewModel: ArtworksViewModel
+    private let router: ArtworksRouting
     private let errorStateView = ErrorStateView()
     
     private lazy var collectionView: UICollectionView = {
@@ -20,8 +21,9 @@ final class ArtworksViewController: UIViewController {
         return collectionView
     }()
 
-    init(viewModel: ArtworksViewModel) {
+    init(viewModel: ArtworksViewModel, router: ArtworksRouting) {
         self.viewModel = viewModel
+        self.router = router
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -156,5 +158,10 @@ extension ArtworksViewController: UICollectionViewDataSource {
 extension ArtworksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         viewModel.loadNextPageIfNeeded(currentIndex: indexPath.item)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let artwork = viewModel.artwork(at: indexPath.item) else { return }
+        router.showArtworkDetails(for: artwork)
     }
 }

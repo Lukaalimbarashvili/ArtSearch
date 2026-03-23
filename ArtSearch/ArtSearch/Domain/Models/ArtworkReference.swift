@@ -23,7 +23,22 @@ struct ArtworkItemViewData {
 
 struct ArtworkDetails {
     let title: String?
+    let description: String?
+    let year: String?
+    let techniques: [String]
+    let materials: [String]
+    let webURL: URL?
     let visualItemURL: URL?
+}
+
+struct ArtworkDetailData {
+    let title: String?
+    let description: String?
+    let year: String?
+    let techniques: [String]
+    let materials: [String]
+    let webURL: URL?
+    let imageURL: URL?
 }
 
 struct VisualItem {

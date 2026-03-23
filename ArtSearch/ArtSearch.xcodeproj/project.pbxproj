@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5A4F4BA12FD1000000A10001 /* NukeExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 5A4F4BA02FD1000000A10001 /* NukeExtensions */; };
+		72EFE0DC2F717D84003E1218 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 72EFE0DB2F717D84003E1218 /* NukeUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5A4F4BA12FD1000000A10001 /* NukeExtensions in Frameworks */,
+				72EFE0DC2F717D84003E1218 /* NukeUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,12 +92,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		72EFE0DA2F717D84003E1218 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		72F9D4982F6BECCF00C10355 = {
 			isa = PBXGroup;
 			children = (
 				72F9D4A32F6BECCF00C10355 /* ArtSearch */,
 				72F9D4BA2F6BECD000C10355 /* ArtSearchTests */,
 				72F9D4C42F6BECD000C10355 /* ArtSearchUITests */,
+				72EFE0DA2F717D84003E1218 /* Frameworks */,
 				72F9D4A22F6BECCF00C10355 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,6 +141,7 @@
 			name = ArtSearch;
 			packageProductDependencies = (
 				5A4F4BA02FD1000000A10001 /* NukeExtensions */,
+				72EFE0DB2F717D84003E1218 /* NukeUI */,
 			);
 			productName = ArtSearch;
 			productReference = 72F9D4A12F6BECCF00C10355 /* ArtSearch.app */;
@@ -304,6 +315,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -334,6 +346,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -607,6 +620,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5A4F4B9F2FD1000000A10001 /* XCRemoteSwiftPackageReference "Nuke" */;
 			productName = NukeExtensions;
+		};
+		72EFE0DB2F717D84003E1218 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A4F4B9F2FD1000000A10001 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

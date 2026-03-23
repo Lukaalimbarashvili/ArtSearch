@@ -28,19 +28,14 @@ struct LoadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol {
 
     private let collectionRepository: MuseumCollectionPageRepositoryProtocol
     private let artworkDetailsRepository: ArtworkDetailsRepositoryProtocol
-    private let visualItemRepository: VisualItemRepositoryProtocol
-    private let digitalObjectRepository: DigitalObjectRepositoryProtocol
+    private let loadArtworkImageURLUseCase: LoadArtworkImageURLUseCaseProtocol
     
-    init(
-        collectionRepository: MuseumCollectionPageRepositoryProtocol,
+    init(collectionRepository: MuseumCollectionPageRepositoryProtocol,
         artworkDetailsRepository: ArtworkDetailsRepositoryProtocol,
-        visualItemRepository: VisualItemRepositoryProtocol,
-        digitalObjectRepository: DigitalObjectRepositoryProtocol
-    ) {
+        loadArtworkImageURLUseCase: LoadArtworkImageURLUseCaseProtocol) {
         self.collectionRepository = collectionRepository
         self.artworkDetailsRepository = artworkDetailsRepository
-        self.visualItemRepository = visualItemRepository
-        self.digitalObjectRepository = digitalObjectRepository
+        self.loadArtworkImageURLUseCase = loadArtworkImageURLUseCase
     }
 
     func execute(nextPageURL: URL?) -> AsyncThrowingStream<ArtworkPreviewUpdate, Error> {
@@ -126,19 +121,6 @@ struct LoadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol {
         }
     }
     
-    private func fetchImageURL(from visualItemURL: URL?) async throws -> URL? {
-        guard let visualItemURL else { return nil }
-        
-        let visualItem = try await visualItemRepository.fetchVisualItem(id: visualItemURL)
-        
-        guard let digitalObjectURL = visualItem.digitalObjectURL else {
-            return nil
-        }
-        
-        let digitalObject = try await digitalObjectRepository.fetchDigitalObject(id: digitalObjectURL)
-        return digitalObject.imageURL
-    }
-    
     private func loadUpdates(for artwork: ArtworkReference) async throws -> [ArtworkLoadResult] {
         do {
             let details = try await artworkDetailsRepository.fetchArtworkDetails(id: artwork.id)
@@ -151,7 +133,7 @@ struct LoadArtworkPreviewsUseCase: LoadArtworkPreviewsUseCaseProtocol {
                 results.append(.failTitle(id: artwork.id))
             }
             
-            let imageURL = try await fetchImageURL(from: details.visualItemURL)
+            let imageURL = try await loadArtworkImageURLUseCase.execute(from: details.visualItemURL)
             if let imageURL {
                 results.append(.image(id: artwork.id, imageURL: imageURL))
             } else {

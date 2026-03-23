@@ -1,16 +1,16 @@
 //
-//  ArtworksScreenConfigurator.swift
+//  ArtworkDetailsScreenConfigurator.swift
 //  ArtSearch
 //
-//  Created by Luka Alimbarashvili on 20.03.26.
+//  Created by Luka Alimbarashvili on 23.03.26.
 //
 
 import UIKit
+import SwiftUI
 
-enum ArtworksScreenConfigurator {
-    static func makeViewController() -> UIViewController {
+enum ArtworkDetailsScreenConfigurator {
+    static func makeViewController(artwork: ArtworkItemViewData) -> UIViewController {
         let networkManager = NetworkManager()
-        let repository = MuseumCollectionPageRepository(networkManager: networkManager)
         let artworkDetailsRepository = ArtworkDetailsRepository(networkManager: networkManager)
         let visualItemRepository = VisualItemRepository(networkManager: networkManager)
         let digitalObjectRepository = DigitalObjectRepository(networkManager: networkManager)
@@ -18,15 +18,16 @@ enum ArtworksScreenConfigurator {
             visualItemRepository: visualItemRepository,
             digitalObjectRepository: digitalObjectRepository
         )
-        let useCase = LoadArtworkPreviewsUseCase(
-            collectionRepository: repository,
+        let useCase = LoadArtworkDetailsUseCase(
             artworkDetailsRepository: artworkDetailsRepository,
             loadArtworkImageURLUseCase: loadArtworkImageURLUseCase
         )
-        let viewModel = ArtworksViewModel(loadArtworkPreviewsUseCase: useCase)
-        let router = ArtworksRouter()
-        let viewController = ArtworksViewController(viewModel: viewModel, router: router)
-        router.viewController = viewController
-        return viewController
+        let viewModel = ArtworkDetailsViewModel(
+            artworkID: artwork.id,
+            initialArtwork: artwork,
+            loadArtworkDetailsUseCase: useCase
+        )
+        let detailView = ArtworkDetailView(viewModel: viewModel)
+        return UIHostingController(rootView: detailView)
     }
 }

@@ -18,6 +18,7 @@ final class ArtworkCell: UICollectionViewCell {
         let imageView = UIImageView(image: placeholderImage)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .secondaryLabel
         imageView.layer.cornerRadius = 12
         imageView.clipsToBounds = true
         return imageView
@@ -41,26 +42,17 @@ final class ArtworkCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(title: String?, imageURL: URL?) {
-        titleLabel.text = title
-        imageView.image = Self.placeholderImage
-        imageView.tintColor = .secondaryLabel
-        NukeExtensions.cancelRequest(for: imageView)
-
-        guard let imageURL else { return }
-        NukeExtensions.loadImage(with: imageURL, options: Self.imageLoadingOptions, into: imageView)
-    }
-
-    func configurePlaceholder() {
-        configure(title: "Loading...", imageURL: nil)
-    }
-
     override func prepareForReuse() {
         super.prepareForReuse()
         NukeExtensions.cancelRequest(for: imageView)
         imageView.image = Self.placeholderImage
-        imageView.tintColor = .secondaryLabel
         titleLabel.text = nil
+    }
+    
+    func configure(title: String?, imageURL: URL?) {
+        titleLabel.text = title
+        guard let imageURL else { return }
+        NukeExtensions.loadImage(with: imageURL, options: Self.imageLoadingOptions, into: imageView)
     }
 
     private func configureUI() {
